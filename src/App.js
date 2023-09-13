@@ -6,7 +6,7 @@ import Products from './components/Shop/Products';
 import { useSelector,useDispatch } from 'react-redux';
 import { uiActions } from './store/ui-slice';
 import Notification from './components/UI/Notification';
-import { sendCartData } from './store/cart-slice';
+import { fetchCartData, sendCartData } from './store/cart-actions';
 
 let isInitial = true;
 
@@ -25,6 +25,9 @@ function App() {
 
   const dispatch = useDispatch();
   useEffect(()=>{
+    dispatch(fetchCartData());
+  },[dispatch])
+  useEffect(()=>{
     // const sendCartData = async()=>{
       //   dispatch(uiActions.showNotification({status:'pending', title:'Sending...', message:'Sending cart data!'}));
       //   const response =await fetch("https://reactredux-829fa-default-rtdb.firebaseio.com/cart.json",{method:'PUT',body:JSON.stringify(cart)});
@@ -39,8 +42,12 @@ function App() {
       isInitial = false;
       return;
     }
+
+    if(cart.changed)
+    {
+      dispatch(sendCartData(cart));
+    }
     
-    dispatch(sendCartData(cart));
     // sendCartData().catch((error) =>{
     //   dispatch(uiActions.showNotification({status:'error', title:'Erorr!', message:'Sending cart data failed'}));
     // });
